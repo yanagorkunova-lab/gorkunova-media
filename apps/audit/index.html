@@ -1,0 +1,974 @@
+<title>Юридический аудит онлайн-школы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
+<style>
+/* Макет: одноколоночная сетка-резюме; записи в две колонки (ярлык слева, текст справа). Только светлая тема — по фирменному стилю. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff; --ink: #141414; --text: #262626; --grey: #8c8c8c;
+  --rule: #141414; --line: #dcdcdc; --panel: #f4f4f4; --red: #e0261f;
+  --font: "Nunito Sans", "Proxima Nova", Arial, sans-serif;
+  --colA: 280px; --gap: 56px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 17px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding-inline: clamp(16px, 4vw, 32px); padding-block: 48px 96px;
+}
+.doc { max-width: 920px; margin: 0 auto; }
+
+h1 { font-size: clamp(40px, 9vw, 84px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+     color: var(--ink); margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(22px, 3.4vw, 28px); font-weight: 700; color: var(--ink); margin: 0 0 20px;
+     padding-bottom: 10px; border-bottom: 1.5px solid var(--rule); text-wrap: balance; }
+h3 { font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 10px;
+     padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+p { margin: 0 0 14px; text-align: justify; hyphens: auto; }
+a { color: var(--ink); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--line); }
+a:hover, a:focus-visible { color: var(--red); border-bottom-color: var(--red); }
+
+.kicker { font-size: 15px; font-weight: 700; color: var(--red); letter-spacing: 0.08em;
+          text-transform: uppercase; margin: 0 0 12px; }
+.lede { color: var(--grey); max-width: 58ch; }
+.note { font-size: 15px; color: var(--grey); }
+.rule-thick { border: 0; border-top: 3px solid var(--rule); margin: 64px 0 28px; }
+
+/* Обложка */
+.cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 24px var(--gap);
+         align-items: end; margin-bottom: 40px; }
+.cover-sub { font-size: clamp(16px, 2vw, 19px); font-weight: 700; color: var(--red); margin: 0; }
+@media (max-width: 760px) { .cover { grid-template-columns: 1fr; align-items: start; } }
+
+.facts { display: grid; grid-template-columns: var(--colA) minmax(0, 1fr); gap: 0 var(--gap);
+         border-top: 1px solid var(--line); margin: 28px 0 0; }
+.facts > div { display: contents; }
+.facts dt { grid-column: 1; padding: 14px 0; font-weight: 700; color: var(--ink);
+            border-bottom: 1px solid var(--line); }
+.facts dd { grid-column: 2; padding: 14px 0; margin: 0; border-bottom: 1px solid var(--line); min-width: 0; }
+@media (max-width: 760px) {
+  .facts { grid-template-columns: 1fr; }
+  .facts dt { padding-bottom: 2px; border-bottom: 0; }
+  .facts dd { grid-column: 1; padding-top: 0; }
+}
+
+/* Шаги */
+.steps { list-style: none; margin: 0 0 32px; padding: 0 0 16px; border-bottom: 1px solid var(--line);
+         display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 15px; }
+.steps li { color: var(--grey); }
+.steps li.done { color: var(--ink); }
+.steps li.now { color: var(--red); font-weight: 700; }
+.step-mark { font-size: 15px; font-weight: 700; color: var(--red); letter-spacing: 0.08em;
+             text-transform: uppercase; margin: 0 0 10px; }
+
+/* Вопросы */
+.q { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 10px var(--gap);
+     padding: 22px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.q:last-of-type { border-bottom: 0; }
+.q-text { font-weight: 700; color: var(--ink); min-width: 0; }
+.q-hint { display: block; font-size: 15px; font-weight: 400; color: var(--grey); margin-top: 6px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.opt { display: inline-flex; align-items: center; }
+.opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+.opt span { display: inline-block; padding: 7px 16px; border: 1px solid var(--line);
+            color: var(--text); font-size: 16px; cursor: pointer; background: var(--bg); }
+.opt:hover span { border-color: var(--ink); color: var(--ink); }
+.opt input:checked + span { border-color: var(--red); color: var(--red); font-weight: 700; }
+.opt input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 760px) { .q { grid-template-columns: 1fr; } }
+
+/* Кнопки */
+.actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 36px; }
+button { font-family: var(--font); font-size: 17px; font-weight: 700; cursor: pointer;
+         padding: 12px 26px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--bg); }
+button:hover { background: var(--red); border-color: var(--red); }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+button.ghost { background: var(--bg); color: var(--ink); }
+button.ghost:hover { background: var(--bg); color: var(--red); border-color: var(--red); }
+button[disabled] { border-color: var(--line); background: var(--bg); color: var(--grey); cursor: not-allowed; }
+button[disabled]:hover { background: var(--bg); color: var(--grey); border-color: var(--line); }
+
+/* Результат */
+.score { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap);
+         border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+         margin: 0 0 40px; padding: 20px 0; }
+.score b { display: block; font-size: 44px; font-weight: 800; line-height: 1.1;
+           font-variant-numeric: tabular-nums; color: var(--ink); }
+.score .s-critical b { color: var(--red); }
+.score .s-minor b { color: var(--grey); }
+.score span { font-size: 15px; color: var(--grey); }
+@media (max-width: 560px) { .score { grid-template-columns: 1fr; gap: 18px; } }
+
+.find { display: grid; grid-template-columns: var(--colA) minmax(0, 1fr); gap: 8px var(--gap);
+        padding: 24px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.find:last-child { border-bottom: 0; }
+.find-side { min-width: 0; }
+.find-sev { font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.sev-critical .find-sev { color: var(--red); }
+.sev-important .find-sev { color: var(--ink); }
+.sev-minor .find-sev { color: var(--grey); }
+.find-title { font-weight: 700; color: var(--ink); margin: 6px 0 4px; }
+.find-norm { font-size: 15px; color: var(--grey); }
+.find-body { min-width: 0; }
+.find-body p { margin: 0 0 10px; }
+.find-body p:last-child { margin: 0; }
+.todo { font-weight: 700; color: var(--ink); }
+@media (max-width: 760px) { .find { grid-template-columns: 1fr; } }
+
+.panel { background: var(--panel); padding: 20px 22px; margin: 0 0 20px; }
+.panel p:last-child { margin: 0; }
+.clean { list-style: none; padding: 0; margin: 0 0 14px; }
+.clean li { position: relative; padding-left: 26px; margin-bottom: 8px; }
+.clean li::before { content: ""; position: absolute; left: 0; top: 8px; width: 9px; height: 9px;
+                    border: 1px solid var(--grey); border-radius: 50%; }
+.red-dot { display: inline-block; width: 9px; height: 9px; background: var(--red);
+           border-radius: 50%; margin-right: 10px; vertical-align: 0.1em; }
+.copybox { width: 100%; min-height: 160px; font-family: var(--font); font-size: 15px; color: var(--text);
+           background: var(--panel); border: 1px solid var(--line); padding: 14px; }
+.contacts { display: grid; grid-template-columns: var(--colA) minmax(0, 1fr); gap: 0 var(--gap);
+            border-top: 1px solid var(--line); }
+.contacts dt { grid-column: 1; padding: 12px 0; font-size: 15px; color: var(--grey);
+               border-bottom: 1px solid var(--line); }
+.contacts dd { grid-column: 2; padding: 12px 0; margin: 0; border-bottom: 1px solid var(--line); min-width: 0;
+               overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .contacts { grid-template-columns: 1fr; }
+  .contacts dt { padding-bottom: 2px; border-bottom: 0; }
+  .contacts dd { grid-column: 1; padding-top: 0; }
+}
+.footer-line { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 15px; color: var(--grey); }
+.arrow { color: var(--red); font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<main class="doc">
+  <section id="screen-intro"></section>
+  <section id="screen-quiz" hidden></section>
+  <section id="screen-result" hidden></section>
+</main>
+
+<script>
+"use strict";
+
+/* ——— Типографика: неразрывные пробелы в ссылках на нормы и суммах ——— */
+function nb(s) {
+  return String(s)
+    .replace(/\b(ст|ч|п|пп|абз|гл|пер)\.\s+/g, "$1. ")
+    .replace(/№\s+/g, "№ ")
+    .replace(/(\d)\s+(\d{3})/g, "$1 $2")
+    .replace(/\s+₽/g, " ₽")
+    .replace(/(\d)\s+(ФЗ|млн)/g, "$1 $2");
+}
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+function t(s) { return nb(esc(s)); }
+function plural(n, forms) {
+  var a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return forms[2];
+  if (b > 1 && b < 5) return forms[1];
+  if (b === 1) return forms[0];
+  return forms[2];
+}
+
+/* ——— Формы ведения деятельности ——— */
+var FORMS = {
+  self: { label: "Самозанятый", fine: "self" },
+  ip:   { label: "ИП",          fine: "ip" },
+  ul:   { label: "ООО",         fine: "ul" },
+  none: { label: "Пока никак",  fine: "self" }
+};
+
+/* ——— Суммы штрафов ———
+   Здесь собраны все денежные ориентиры приложения: правь только этот объект.
+   Указаны суммы, которые прямо закреплены в законе. Там, где редакции КоАП
+   2025–2026 годов по-разному распределяют суммы между ИП и юрлицами,
+   сумма не указана — назван только состав. */
+var FINE = {
+  rknNotice: { self: "5 000–10 000 ₽", ip: "30 000–50 000 ₽", ul: "100 000–300 000 ₽" },
+  adMarking: { self: "десятки тысяч ₽", ip: "десятки тысяч ₽", ul: "до 500 000 ₽" },
+  adFalse:   { self: "десятки тысяч ₽", ip: "десятки тысяч ₽", ul: "до 500 000 ₽" },
+  noReceipt: { self: "не менее 10 000 ₽", ip: "от 1/4 до 1/2 суммы расчёта, не менее 10 000 ₽", ul: "от 3/4 до одной суммы расчёта, не менее 30 000 ₽" },
+  copyright: { self: "10 000 – 5 000 000 ₽", ip: "10 000 – 5 000 000 ₽", ul: "10 000 – 5 000 000 ₽" }
+};
+function fine(key, form) {
+  var f = FINE[key];
+  if (!f) return "";
+  return f[FORMS[form] ? FORMS[form].fine : "ip"] || "";
+}
+
+/* ——— Вопросы ———
+   risk.on — ответ, который включает находку. "unknown" включает её всегда.
+   gate — пока на вопрос-ворота не дан нужный ответ, зависимые вопросы скрыты. */
+var BLOCKS = [
+  {
+    id: "profile",
+    title: "С чего начнём",
+    lede: "Два вопроса о том, как устроен ваш бизнес. От них зависит, какие суммы штрафов я покажу дальше.",
+    questions: [
+      {
+        id: "form", kind: "form",
+        text: "Как вы оформлены?",
+        hint: "Если деятельность ведётся с нескольких лиц, выберите то, на которое принимаете оплату от учеников.",
+        options: [
+          { v: "self", label: "Самозанятый" },
+          { v: "ip", label: "ИП" },
+          { v: "ul", label: "ООО" },
+          { v: "none", label: "Пока никак" }
+        ],
+        risk: {
+          on: "none", severity: "critical",
+          title: "Деятельность не оформлена",
+          norm: "п. 1 ст. 23 ГК, ст. 14.1 КоАП",
+          why: "Систематический доход от продажи курсов — это предпринимательская деятельность, и вести её без регистрации нельзя. Кроме штрафа это значит, что вы не можете выдать чек, а значит у клиента на руках нет подтверждения оплаты — и любой спор о возврате вы проиграете.",
+          todo: "Зарегистрироваться до следующего запуска: самозанятость, если вы продаёте только свои консультации и записи, ИП — если есть команда, реклама и рассрочки."
+        }
+      },
+      {
+        id: "teachers", kind: "choice",
+        text: "Кто ведёт обучение?",
+        hint: "Это определяет, нужна ли вам образовательная лицензия.",
+        options: [
+          { v: "onlyme", label: "Только я" },
+          { v: "hired", label: "Я и привлечённые преподаватели" },
+          { v: "records", label: "Только записанные материалы" }
+        ],
+        risk: {
+          on: "hired", severity: "important",
+          title: "Привлечённые преподаватели — повод проверить лицензию",
+          norm: "ст. 91 ФЗ № 273-ФЗ, ч. 2 ст. 14.1 КоАП",
+          why: "Пока вы учите лично, лицензия не нужна. Как только к работе подключаются преподаватели и вы называете это образовательной программой, деятельность может быть признана образовательной — а она лицензируется. Разбор упирается не в вывеску, а в то, что написано в вашей оферте и как устроена проверка знаний.",
+          todo: "Проверить формулировки оферты и программы: либо привести их к информационно-консультационным услугам, либо получать лицензию."
+        }
+      }
+    ]
+  },
+
+  {
+    id: "pd",
+    title: "Персональные данные",
+    lede: "Самый частый источник штрафов у онлайн-школ — и единственный блок, где проверка приходит без жалобы клиента.",
+    questions: [
+      {
+        id: "pd_collect", kind: "yn", gate: true,
+        text: "Вы собираете имя, телефон, e‑mail или ник через сайт, лендинг, бота или форму записи?",
+        hint: "Если да — вы оператор персональных данных, со всеми обязанностями оператора."
+      },
+      {
+        id: "pd_rkn", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "Вы подали в Роскомнадзор уведомление о начале обработки персональных данных?",
+        hint: "Уведомление подаётся до того, как вы собрали первую заявку.",
+        risk: {
+          on: "no", severity: "critical", fineKey: "rknNotice",
+          title: "Нет уведомления в Роскомнадзор",
+          norm: "ч. 1 ст. 22 ФЗ № 152-ФЗ, ч. 10 ст. 13.11 КоАП",
+          why: "С 30 мая 2025 года за неподачу уведомления есть отдельный штраф, и наличие формы на сайте проверяется без выезда — достаточно открыть страницу. Это нарушение, которое видно снаружи и фиксируется в одно действие.",
+          todo: "Подать уведомление через портал Роскомнадзора. Это бесплатно и занимает один день, но цели обработки нужно описать точно: лишние цели в уведомлении — отдельный состав."
+        }
+      },
+      {
+        id: "pd_policy", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "Политика обработки персональных данных опубликована и доступна с каждой страницы, где есть форма?",
+        hint: "Ссылка должна открываться без регистрации — в том числе в боте и на странице оплаты.",
+        risk: {
+          on: "no", severity: "critical",
+          title: "Политика недоступна там, где собираются данные",
+          norm: "ч. 2 ст. 18.1 ФЗ № 152-ФЗ, ч. 3 ст. 13.11 КоАП",
+          why: "Закон требует не просто иметь политику, а обеспечить к ней неограниченный доступ. Чаще всего политика лежит на основном сайте, а заявки собираются в боте или на отдельном лендинге, где ссылки нет — и нарушение фиксируется именно там.",
+          todo: "Разместить ссылку на политику рядом с каждой формой, включая бота и страницу оплаты."
+        }
+      },
+      {
+        id: "pd_consent", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "Перед отправкой формы стоит отдельная галочка согласия, не отмеченная заранее?",
+        hint: "Предустановленная галочка и фраза «нажимая кнопку, вы соглашаетесь» — это не согласие.",
+        risk: {
+          on: "no", severity: "critical",
+          title: "Согласие на обработку данных не получено",
+          norm: "ч. 1 ст. 9 ФЗ № 152-ФЗ, ч. 1 ст. 13.11 КоАП",
+          why: "Согласие должно быть конкретным, предметным и добровольным, а бремя доказывания лежит на вас. Если галочка отмечена по умолчанию, считается, что согласия не было: вся база собрана с нарушением, и это уже не один штраф, а вопрос ко всей обработке.",
+          todo: "Поставить отдельную неотмеченную галочку и сохранять факт согласия: время, страницу и текст, с которым человек согласился."
+        }
+      },
+      {
+        id: "pd_mailing", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "Согласие на рекламную рассылку вы берёте отдельно от согласия на обработку данных?",
+        hint: "Рассылка писем и сообщений в боте — это реклама, и на неё нужно своё согласие.",
+        risk: {
+          on: "no", severity: "important",
+          title: "Рассылка идёт без отдельного согласия",
+          norm: "ч. 1 ст. 18 ФЗ № 38-ФЗ «О рекламе»",
+          why: "Согласие на обработку данных не даёт права присылать рекламу. Достаточно одной жалобы получателя в ФАС, чтобы началась проверка, а переписка в боте сохраняется и легко прикладывается к жалобе.",
+          todo: "Развести два согласия и хранить подтверждение каждого отдельно."
+        }
+      },
+      {
+        id: "pd_foreign", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "Вы пользуетесь зарубежными сервисами для заявок, писем или учёта учеников?",
+        hint: "Google-формы и таблицы, Mailchimp, Notion, зарубежные CRM и платформы вебинаров.",
+        risk: {
+          on: "yes", severity: "important",
+          title: "Трансграничная передача данных без уведомления",
+          norm: "ст. 12 ФЗ № 152-ФЗ",
+          why: "Как только заявки попадают в зарубежный сервис, вы передаёте персональные данные за границу. Для этого нужно отдельное уведомление в Роскомнадзор, поданное до начала передачи, а по ряду стран передача может быть ограничена.",
+          todo: "Либо перенести заявки и базу учеников в российские сервисы, либо подать уведомление о трансграничной передаче."
+        }
+      },
+      {
+        id: "pd_analytics", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "В политике перечислены аналитика и пиксели, которые стоят у вас на сайте?",
+        hint: "Метрика, пиксель VK, сквозная аналитика, коллтрекинг.",
+        risk: {
+          on: "no", severity: "important",
+          title: "Счётчики и пиксели не описаны в политике",
+          norm: "ч. 2 ст. 18.1, ст. 9 ФЗ № 152-ФЗ",
+          why: "Счётчик собирает данные о посетителе и передаёт их третьей стороне. Если в политике об этом ничего нет, человек не мог дать согласие на то, чего не видел. Проверяется это так же просто, как отсутствие политики: достаточно открыть исходный код страницы.",
+          todo: "Перечислить в политике все счётчики, цели сбора и кому данные передаются."
+        }
+      },
+      {
+        id: "pd_storage", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "База учеников лежит так, что доступ к ней есть только у вас и тех, кому вы его дали осознанно?",
+        hint: "Таблица со ссылкой «для всех, у кого есть ссылка» и база в общем чате — это не так.",
+        risk: {
+          on: "no", severity: "critical",
+          title: "База доступна шире, чем нужно",
+          norm: "ст. 19 ФЗ № 152-ФЗ, ст. 13.11 КоАП",
+          why: "Ответственность за утечку — самая дорогая в этом списке, и с 2025 года для неё введены отдельные составы с суммами, несопоставимыми с остальными нарушениями. Открытая по ссылке таблица с телефонами учеников — это утечка, которая случится без всякого взлома.",
+          todo: "Закрыть доступ по ссылке, выдать доступы адресно и убрать базу из переписок."
+        }
+      },
+      {
+        id: "pd_officer", kind: "yn", dependsOn: { q: "pd_collect", v: "yes" },
+        text: "У вас есть документы оператора: приказ об ответственном и перечень мер защиты?",
+        hint: "Для ИП без сотрудников это короткий пакет, но он должен существовать.",
+        risk: {
+          on: "no", severity: "minor",
+          title: "Нет внутренних документов оператора",
+          norm: "ст. 18.1, 22.1 ФЗ № 152-ФЗ",
+          why: "Эти документы не видно снаружи, поэтому сами по себе они штрафом обычно не заканчиваются. Но при проверке именно их запрашивают первыми, и их отсутствие превращает разговор о мелком замечании в полную проверку обработки.",
+          todo: "Собрать базовый пакет: приказ об ответственном, перечень мер, порядок реагирования на запросы субъектов."
+        }
+      }
+    ]
+  },
+
+  {
+    id: "offer",
+    title: "Договор с учеником",
+    lede: "Оферта — единственное место, где вы можете заранее договориться о правилах. Всё, чего в ней нет, толкуется в пользу клиента.",
+    questions: [
+      {
+        id: "of_exists", kind: "yn",
+        text: "На сайте есть оферта или договор, доступные до оплаты?",
+        risk: {
+          on: "no", severity: "critical",
+          title: "Нет договора с учеником",
+          norm: "ст. 437 ГК, ст. 10 ЗоЗПП",
+          why: "Без оферты у вас нет ни сроков, ни порядка возврата, ни правил доступа — остаётся только Закон о защите прав потребителей, который написан не в вашу пользу. Любой спор в этой ситуации сводится к тому, что клиент утверждает одно, а подтвердить обратное вам нечем.",
+          todo: "Опубликовать оферту и сделать её доступной до оплаты, а не после."
+        }
+      },
+      {
+        id: "of_accept", kind: "yn",
+        text: "Вы фиксируете, что клиент принял оферту: галочка плюс сохранённые дата, время и версия документа?",
+        hint: "Если оферту правили после запуска, нужно понимать, какую версию принимал конкретный ученик.",
+        risk: {
+          on: "no", severity: "important",
+          title: "Акцепт оферты не фиксируется",
+          norm: "п. 3 ст. 438 ГК",
+          why: "Оферта защищает только тогда, когда вы можете показать, что этот человек её принял. Если фиксации нет, клиент в суде скажет, что документа не видел, и спорить вы будете уже без оферты.",
+          todo: "Сохранять вместе с заявкой время акцепта и версию оферты, а старые версии не удалять."
+        }
+      },
+      {
+        id: "of_subject", kind: "yn",
+        text: "В оферте точно описано, что вы продаёте: доступ к материалам и консультации, а не «образование» и «диплом»?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Предмет договора описан как образовательная услуга",
+          norm: "ст. 91 ФЗ № 273-ФЗ, ч. 2 ст. 14.1 КоАП",
+          why: "Слова в оферте определяют, по каким правилам вас будут проверять. «Образовательная программа», «зачисление» и «диплом» — это признаки деятельности, которая лицензируется, и вопрос о лицензии возникнет из вашего же документа.",
+          todo: "Привести предмет, термины и описание результата к тому формату, в котором вы работаете на самом деле."
+        }
+      },
+      {
+        id: "of_info", kind: "yn",
+        text: "В оферте указаны ИНН, ОГРНИП или ОГРН, адрес и способ связи?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Нет обязательных сведений об исполнителе",
+          norm: "ст. 10 ЗоЗПП, ст. 14.8 КоАП",
+          why: "Потребитель вправе знать, с кем он заключает договор. Отсутствие реквизитов — самостоятельное нарушение, которое Роспотребнадзор фиксирует по одной жалобе, не разбираясь в сути ваших отношений с клиентом.",
+          todo: "Добавить полные реквизиты в оферту и на страницу оплаты."
+        }
+      },
+      {
+        id: "of_refund", kind: "yn",
+        text: "В оферте прописан порядок возврата: как считается стоимость пройденной части и какие расходы вы удерживаете?",
+        risk: {
+          on: "no", severity: "critical",
+          title: "Порядок возврата не описан",
+          norm: "ст. 32 ЗоЗПП",
+          why: "Клиент вправе отказаться от услуги в любой момент и получить деньги за вычетом ваших фактически понесённых расходов. Если в оферте нет ни формулы расчёта, ни состава расходов, вам придётся вернуть всю сумму — даже если ученик прошёл курс до последнего урока.",
+          todo: "Описать расчёт по этапам и перечислить, что входит в фактически понесённые расходы.",
+          example: "Стоимость пройденной части = стоимость курса ÷ число модулей × число открытых модулей."
+        }
+      },
+      {
+        id: "of_access", kind: "yn",
+        text: "В оферте указан срок доступа к материалам и то, что будет при закрытии курса или платформы?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Срок доступа не ограничен",
+          norm: "ст. 309, 314 ГК",
+          why: "Если срок не назван, доступ считается бессрочным, и через два года ученик вправе требовать материалы и поддержку, которых у вас уже нет. Отдельно это значит, что вы не можете закрыть устаревший курс, не нарушив договор.",
+          todo: "Указать срок доступа и порядок действий при закрытии курса."
+        }
+      },
+      {
+        id: "of_ip", kind: "yn",
+        text: "В оферте есть запрет передавать доступ и распространять материалы, с ответственностью за нарушение?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Нет условий о материалах курса",
+          norm: "ст. 1229, 1301 ГК",
+          why: "Исключительное право у вас есть и без оферты, но без прописанных условий и ответственности взыскать что-то с ученика, раздавшего доступ, намного сложнее: придётся доказывать и факт, и размер убытков с нуля.",
+          todo: "Добавить запрет на передачу доступа, условие о компенсации и порядок блокировки доступа."
+        }
+      }
+    ]
+  },
+
+  {
+    id: "money",
+    title: "Возвраты и деньги",
+    lede: "Здесь риски приходят от конкретного недовольного человека — и обычно сразу с требованием денег.",
+    questions: [
+      {
+        id: "mn_norefund", kind: "yn",
+        text: "Вы отказывали в возврате со ссылкой на то, что возврат не предусмотрен?",
+        risk: {
+          on: "yes", severity: "critical",
+          title: "Отказ в возврате по ничтожному условию",
+          norm: "п. 1 ст. 16, ст. 32 ЗоЗПП, п. 6 ст. 13 ЗоЗПП",
+          why: "Условие «возврат не предусмотрен» недействительно: право на отказ от услуги нельзя отменить договором. В суде это обычно заканчивается возвратом, неустойкой и дополнительным штрафом в половину взысканной суммы — то есть платить придётся заметно больше, чем клиент просил изначально.",
+          todo: "Убрать такое условие, вернуть деньги по спорным обращениям до суда и перейти на расчёт по фактическим расходам."
+        }
+      },
+      {
+        id: "mn_costs", kind: "yn",
+        text: "Вы можете подтвердить документами фактически понесённые расходы по конкретному ученику?",
+        hint: "Оплата куратору, платформа, эквайринг, закупленная реклама.",
+        risk: {
+          on: "no", severity: "important",
+          title: "Фактические расходы нечем подтвердить",
+          norm: "ст. 32 ЗоЗПП",
+          why: "Удержать можно только то, что вы подтвердите. Без документов любая удержанная сумма выглядит произвольной, и возвращать придётся полностью.",
+          todo: "Завести понятный расчёт расходов на одного ученика и хранить закрывающие документы."
+        }
+      },
+      {
+        id: "mn_claims", kind: "yn",
+        text: "Вы отвечаете на письменные претензии в течение десяти дней?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Претензии остаются без ответа в срок",
+          norm: "ст. 22, 28, 31 ЗоЗПП",
+          why: "С одиннадцатого дня начинает капать неустойка — три процента за каждый день просрочки. Молчание само по себе становится отдельным требованием в иске, и к моменту суда сумма вырастает независимо от того, кто был прав по существу.",
+          todo: "Назначить срок ответа внутри команды и отвечать письменно, даже когда отказываете."
+        }
+      },
+      {
+        id: "mn_receipt", kind: "yn",
+        text: "На каждую оплату вы выдаёте чек?",
+        hint: "Включая рассрочки, доплаты и оплаты от юридических лиц.",
+        risk: {
+          on: "no", severity: "critical", fineKey: "noReceipt",
+          title: "Чек не выдаётся",
+          norm: "ФЗ № 54-ФЗ, ст. 14.5 КоАП",
+          why: "Штраф считается не фиксированной суммой, а долей от расчёта, по которому не выдали чек, — поэтому при больших чеках он оказывается самым дорогим пунктом блока. Жалоба на невыданный чек подаётся за минуту прямо из приложения налоговой.",
+          todo: "Подключить онлайн-кассу или проверить, что сервис приёма платежей действительно отправляет чек от вашего имени."
+        }
+      },
+      {
+        id: "mn_card", kind: "yn",
+        text: "Вы принимаете оплату переводом на личную карту?",
+        risk: {
+          on: "yes", severity: "important",
+          title: "Оплата идёт на личную карту",
+          norm: "ФЗ № 54-ФЗ, ФЗ № 115-ФЗ",
+          why: "Переводы от незнакомых людей на личный счёт — основание для блокировки по антиотмывочному законодательству, а налоговая видит в них выручку без чеков. Для клиента перевод на личную карту тоже означает, что доказательств оплаты услуги у него нет, и это оборачивается против вас в споре.",
+          todo: "Перевести оплаты на расчётный счёт и платёжный сервис, который выдаёт чек."
+        }
+      }
+    ]
+  },
+
+  {
+    id: "ads",
+    title: "Реклама",
+    lede: "Блок про то, что видно всем. Нарушение здесь фиксируется по скриншоту, без доступа к вашим документам.",
+    questions: [
+      {
+        id: "ad_run", kind: "yn", gate: true,
+        text: "Вы запускаете платную рекламу или покупаете размещения у блогеров?",
+        hint: "Таргет, Яндекс Директ, посевы, реклама в чужих каналах и сторис."
+      },
+      {
+        id: "ad_erid", kind: "yn", dependsOn: { q: "ad_run", v: "yes" },
+        text: "На каждый креатив вы получаете erid и ставите пометку «Реклама» с данными рекламодателя?",
+        risk: {
+          on: "no", severity: "critical", fineKey: "adMarking",
+          title: "Реклама без маркировки",
+          norm: "ст. 18.1 ФЗ № 38-ФЗ, ст. 14.3 КоАП",
+          why: "Маркировка обязательна для всей интернет-рекламы, а нарушение видно в самом объявлении: его достаточно открыть. Отвечают и рекламодатель, и площадка, поэтому «блогер сам размещал» от ответственности не освобождает.",
+          todo: "Получать erid через оператора рекламных данных до размещения и прописать маркировку в договорах с блогерами."
+        }
+      },
+      {
+        id: "ad_erir", kind: "yn", dependsOn: { q: "ad_run", v: "yes" },
+        text: "Данные по размещениям уходят в единый реестр интернет-рекламы в срок?",
+        risk: {
+          on: "no", severity: "critical", fineKey: "adMarking",
+          title: "Отчётность по рекламе не сдаётся",
+          norm: "ст. 18.1 ФЗ № 38-ФЗ, ст. 14.3 КоАП",
+          why: "Это отдельное нарушение, не связанное с маркировкой: креатив может быть размечен верно, а статистика не сдана. Проверяется оно не по вашему объявлению, а по данным реестра, где видно расхождение.",
+          todo: "Закрепить за конкретным человеком передачу статистики и сверять её с актами площадок."
+        }
+      },
+      {
+        id: "ad_promise", kind: "yn", dependsOn: { q: "ad_run", v: "yes" },
+        text: "В рекламе вы обещаете конкретный доход или гарантированный результат?",
+        hint: "«Выйдешь на 300 000 ₽ за два месяца», «гарантируем трудоустройство».",
+        risk: {
+          on: "yes", severity: "critical", fineKey: "adFalse",
+          title: "Недостоверная реклама",
+          norm: "ч. 7 ст. 5 ФЗ № 38-ФЗ, ст. 14.3 КоАП",
+          why: "Обещание результата, который зависит от самого ученика, считается недостоверным. Такое объявление — готовое доказательство: его присылают в ФАС скриншотом, и оно же становится основанием требовать деньги обратно, потому что результат не достигнут.",
+          todo: "Заменить обещания на описание программы и оговорку о том, от чего зависит результат."
+        }
+      },
+      {
+        id: "ad_reviews", kind: "yn", dependsOn: { q: "ad_run", v: "yes" },
+        text: "Отзывы, скриншоты и кейсы учеников вы используете с их письменного согласия?",
+        risk: {
+          on: "no", severity: "important",
+          title: "Кейсы учеников используются без согласия",
+          norm: "ст. 152.1 ГК, ст. 9 ФЗ № 152-ФЗ",
+          why: "Фотография, имя и история ученика — это и изображение, и персональные данные. Разрешение на публикацию нужно получать отдельно, и в споре именно вам придётся показать, что оно было.",
+          todo: "Собрать согласие на использование отзыва и изображения — одним пунктом в оферте и отдельным подтверждением для громких кейсов."
+        }
+      },
+      {
+        id: "ad_naming", kind: "yn", dependsOn: { q: "ad_run", v: "yes" },
+        text: "Вы называете проект школой или академией и обещаете диплом, не имея лицензии?",
+        risk: {
+          on: "yes", severity: "critical",
+          title: "Названия и документы обещают образование",
+          norm: "ст. 91 ФЗ № 273-ФЗ, ч. 7 ст. 5 ФЗ № 38-ФЗ",
+          why: "Здесь складываются два риска: реклама обещает то, чего вы не выдаёте, и ваши же материалы указывают на деятельность, которая лицензируется. Претензия приходит от ученика, который рассчитывал на документ об образовании.",
+          todo: "Убрать из рекламы и материалов слова «диплом» и «государственный образец» либо получать лицензию."
+        }
+      }
+    ]
+  },
+
+  {
+    id: "team",
+    title: "Команда и материалы",
+    lede: "Риски, которые годами не проявляются, а потом приходят сразу суммой за весь период.",
+    questions: [
+      {
+        id: "tm_contracts", kind: "yn", gate: true,
+        text: "Вы привлекаете подрядчиков: куратора, продюсера, дизайнера, монтажёра?"
+      },
+      {
+        id: "tm_written", kind: "yn", dependsOn: { q: "tm_contracts", v: "yes" },
+        text: "С каждым подрядчиком есть письменный договор и закрывающие документы?",
+        risk: {
+          on: "no", severity: "critical",
+          title: "Работа с подрядчиками без договора",
+          norm: "ст. 161 ГК, ст. 252 НК",
+          why: "Без договора вы не можете ни учесть расходы, ни потребовать результат, ни подтвердить фактические расходы при возврате ученику. Это один из тех пунктов, который ломает сразу три другие: налоги, возвраты и права на материалы.",
+          todo: "Заключить договоры со всеми, кто уже работает, и закрывать каждый этап актом."
+        }
+      },
+      {
+        id: "tm_rights", kind: "yn", dependsOn: { q: "tm_contracts", v: "yes" },
+        text: "В договорах с подрядчиками прописана передача вам исключительных прав на результат?",
+        hint: "Лендинг, видео, презентации, тексты уроков, фирменный стиль.",
+        risk: {
+          on: "no", severity: "important",
+          title: "Права на материалы остались у подрядчиков",
+          norm: "ст. 1288, 1296 ГК",
+          why: "По умолчанию исключительное право остаётся у автора, а вы получаете только возможность пользоваться результатом. Это всплывает в самый неподходящий момент: при расставании с подрядчиком, продаже проекта или регистрации товарного знака.",
+          todo: "Добавить передачу исключительных прав в полном объёме и подписать такие условия с подрядчиками, которые работали раньше."
+        }
+      },
+      {
+        id: "tm_requal", kind: "yn", dependsOn: { q: "tm_contracts", v: "yes" },
+        text: "Есть подрядчики, которые работают только на вас, по вашему графику и получают одинаковую сумму каждый месяц?",
+        risk: {
+          on: "yes", severity: "critical",
+          title: "Признаки трудовых отношений",
+          norm: "ст. 15, 19.1 ТК, ст. 5.27 КоАП",
+          why: "Такие отношения признают трудовыми, и тогда налоги и взносы пересчитывают за весь период работы, с пенями и штрафом. Сумма здесь зависит не от одного нарушения, а от того, сколько месяцев это продолжалось, поэтому со временем она только растёт.",
+          todo: "Либо убрать признаки трудовых отношений из договоров и переписки, либо оформить людей в штат."
+        }
+      },
+      {
+        id: "tm_assets", kind: "yn",
+        text: "Вы используете в материалах чужие фотографии, музыку, шрифты или кадры из фильмов?",
+        hint: "В том числе картинки из поиска и музыка в рилсах.",
+        risk: {
+          on: "yes", severity: "critical", fineKey: "copyright",
+          title: "Чужие материалы без лицензии",
+          norm: "ст. 1229, 1301 ГК",
+          why: "Правообладатель вправе требовать компенсацию без доказывания убытков, а поиск нарушений давно автоматизирован: сервисы находят изображения и музыку по всему интернету. Такие требования приходят не от учеников, а от компаний, которые на этом специализируются.",
+          todo: "Заменить спорные материалы на лицензированные и сохранять лицензии на всё, что используете."
+        }
+      },
+      {
+        id: "tm_tm", kind: "yn",
+        text: "Название проекта проверено на занятость и зарегистрировано как товарный знак?",
+        risk: {
+          on: "no", severity: "minor",
+          title: "Название не защищено",
+          norm: "ст. 1484 ГК",
+          why: "Пока проект небольшой, это терпит. Но если кто-то зарегистрирует похожее название раньше, претензия придёт к вам — и менять придётся всё: домен, аккаунты, материалы и рекламу, в которую вы уже вложились.",
+          todo: "Проверить название по реестру и подать заявку, если планируете вкладываться в бренд."
+        }
+      }
+    ]
+  }
+];
+
+/* ——— Состояние ——— */
+var STORE_KEY = "gorkunova-audit-v1";
+var state = { answers: {}, step: 0, started: false };
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function load() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    var parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && parsed.answers) {
+      state.answers = parsed.answers;
+      state.step = typeof parsed.step === "number" ? parsed.step : 0;
+      state.started = !!parsed.started;
+    }
+  } catch (e) {}
+}
+
+function form() { return state.answers.form || "ip"; }
+
+function visible(q) {
+  if (!q.dependsOn) return true;
+  return state.answers[q.dependsOn.q] === q.dependsOn.v;
+}
+function blockQuestions(b) { return b.questions.filter(visible); }
+function blockDone(b) {
+  return blockQuestions(b).every(function (q) { return !!state.answers[q.id]; });
+}
+
+/* ——— Находки ——— */
+function findings() {
+  var out = [];
+  BLOCKS.forEach(function (b) {
+    b.questions.forEach(function (q) {
+      if (!q.risk || !visible(q)) return;
+      var a = state.answers[q.id];
+      if (!a) return;
+      var hit = a === q.risk.on;
+      var unsure = a === "unknown";
+      if (!hit && !unsure) return;
+      out.push({
+        block: b.title,
+        severity: unsure && !hit ? downgrade(q.risk.severity) : q.risk.severity,
+        unsure: unsure && !hit,
+        title: q.risk.title,
+        norm: q.risk.norm,
+        why: q.risk.why,
+        todo: q.risk.todo,
+        example: q.risk.example,
+        fine: q.risk.fineKey ? fine(q.risk.fineKey, form()) : ""
+      });
+    });
+  });
+  var order = { critical: 0, important: 1, minor: 2 };
+  return out.sort(function (x, y) { return order[x.severity] - order[y.severity]; });
+}
+function downgrade(sev) { return sev === "critical" ? "important" : sev === "important" ? "minor" : "minor"; }
+
+var SEV_LABEL = { critical: "Критично", important: "Важно", minor: "Можно отложить" };
+
+/* ——— Экраны ——— */
+var elIntro = document.getElementById("screen-intro");
+var elQuiz = document.getElementById("screen-quiz");
+var elResult = document.getElementById("screen-result");
+
+function show(which) {
+  elIntro.hidden = which !== "intro";
+  elQuiz.hidden = which !== "quiz";
+  elResult.hidden = which !== "result";
+  window.scrollTo(0, 0);
+}
+
+function countQuestions() {
+  var n = 0;
+  BLOCKS.forEach(function (b) { n += b.questions.length; });
+  return n;
+}
+
+function renderIntro() {
+  var answered = Object.keys(state.answers).length;
+  elIntro.innerHTML =
+    '<div class="cover">' +
+      "<h1>Юридический аудит онлайн&#8209;школы</h1>" +
+      '<p class="cover-sub">' + t("Проверка за 5 минут: что у вас не закрыто и чем это грозит") + "</p>" +
+    "</div>" +
+    '<p class="lede">' + t("Я собрала вопросы, по которым ко мне чаще всего приходят эксперты и онлайн-школы — обычно уже после того, как пришла жалоба или претензия. Ответьте на " + countQuestions() + " " + plural(countQuestions(), ["вопрос", "вопроса", "вопросов"]) + ", и вы увидите свои слабые места, ссылки на нормы и порядок действий: с чего начать и что можно отложить.") + "</p>" +
+    '<dl class="facts">' +
+      "<div><dt>" + t("Сколько займёт") + "</dt><dd>" + t("5–7 минут. Ответы сохраняются в браузере, можно прервать и вернуться.") + "</dd></div>" +
+      "<div><dt>" + t("Что вы получите") + "</dt><dd>" + t("Разбор по степени риска: критично, важно, можно отложить — с нормой и первым шагом по каждому пункту.") + "</dd></div>" +
+      "<div><dt>" + t("Какие данные я вижу") + "</dt><dd>" + t("Никакие. Приложение не собирает имя, телефон и e-mail, ответы не уходят с вашего устройства. Результат вы отправите мне сами, если захотите.") + "</dd></div>" +
+    "</dl>" +
+    '<div class="actions">' +
+      '<button type="button" id="btn-start">' + (answered ? t("Продолжить") : t("Начать проверку")) + "</button>" +
+      (answered ? '<button type="button" class="ghost" id="btn-reset">' + t("Начать заново") + "</button>" : "") +
+    "</div>" +
+    '<p class="footer-line">' + t("подписывайтесь на мой канал") + ' <span class="arrow">→</span> <a href="https://t.me/gorkunova_pravo" target="_blank" rel="noopener">t.me/gorkunova_pravo</a></p>';
+
+  document.getElementById("btn-start").addEventListener("click", function () {
+    state.started = true; save(); renderQuiz(); show("quiz");
+  });
+  var r = document.getElementById("btn-reset");
+  if (r) r.addEventListener("click", reset);
+}
+
+function renderSteps(current) {
+  return '<ol class="steps">' + BLOCKS.map(function (b, i) {
+    var cls = i === current ? "now" : blockDone(b) && i < current ? "done" : "";
+    return '<li class="' + cls + '">' + t(b.title) + "</li>";
+  }).join("") + "</ol>";
+}
+
+function renderQuiz() {
+  var b = BLOCKS[state.step];
+  var qs = blockQuestions(b);
+  var html = renderSteps(state.step) +
+    '<p class="step-mark">' + t("Шаг " + (state.step + 1) + " из " + BLOCKS.length) + "</p>" +
+    "<h2>" + t(b.title) + "</h2>" +
+    (b.lede ? '<p class="lede">' + t(b.lede) + "</p>" : "") +
+    '<div class="qlist">' + qs.map(renderQuestion).join("") + "</div>" +
+    '<div class="actions">' +
+      (state.step > 0 ? '<button type="button" class="ghost" id="btn-prev">' + t("Назад") + "</button>" : "") +
+      '<button type="button" id="btn-next"' + (blockDone(b) ? "" : " disabled") + ">" +
+        (state.step === BLOCKS.length - 1 ? t("Показать результат") : t("Дальше")) +
+      "</button>" +
+      (blockDone(b) ? "" : '<span class="note">' + t("Ответьте на все вопросы шага") + "</span>") +
+    "</div>";
+  elQuiz.innerHTML = html;
+
+  elQuiz.querySelectorAll("input[type=radio]").forEach(function (input) {
+    input.addEventListener("change", function () {
+      state.answers[input.name] = input.value;
+      save();
+      renderQuiz();
+    });
+  });
+  var prev = document.getElementById("btn-prev");
+  if (prev) prev.addEventListener("click", function () {
+    state.step = Math.max(0, state.step - 1); save(); renderQuiz(); window.scrollTo(0, 0);
+  });
+  document.getElementById("btn-next").addEventListener("click", function () {
+    if (state.step === BLOCKS.length - 1) { renderResult(); show("result"); }
+    else { state.step += 1; save(); renderQuiz(); window.scrollTo(0, 0); }
+  });
+}
+
+function renderQuestion(q) {
+  var opts = q.options || [
+    { v: "yes", label: "Да" },
+    { v: "no", label: "Нет" },
+    { v: "unknown", label: "Не знаю" }
+  ];
+  var cur = state.answers[q.id];
+  return '<div class="q">' +
+    '<div class="q-text">' + t(q.text) +
+      (q.hint ? '<span class="q-hint">' + t(q.hint) + "</span>" : "") +
+    "</div>" +
+    '<div class="opts" role="group">' + opts.map(function (o, i) {
+      var id = "q-" + q.id + "-" + o.v;
+      return '<label class="opt" for="' + id + '">' +
+        '<input type="radio" id="' + id + '" name="' + q.id + '" value="' + o.v + '"' +
+          (cur === o.v ? " checked" : "") + ">" +
+        "<span>" + t(o.label) + "</span></label>";
+    }).join("") + "</div>" +
+  "</div>";
+}
+
+function verdict(f) {
+  var c = f.filter(function (x) { return x.severity === "critical"; }).length;
+  if (c === 0 && f.length === 0) return "У вас закрыто всё, что я проверяю в этом аудите. Это редкий результат — имеет смысл раз в полгода пересматривать документы под новые требования.";
+  if (c === 0) return "Критических пунктов нет. Остальное стоит закрыть спокойно и по порядку, пока к этому не появился повод со стороны.";
+  if (c <= 2) return "Критических пунктов немного, и они закрываются быстрее, чем кажется. Начните с них: именно по ним нарушение видно снаружи, без всякой проверки.";
+  return "Критических пунктов достаточно, чтобы претензия или проверка закончилась деньгами. Беритесь по порядку сверху: первые пункты списка — те, которые видно без доступа к вашим документам.";
+}
+
+function renderResult() {
+  var f = findings();
+  var counts = {
+    critical: f.filter(function (x) { return x.severity === "critical"; }).length,
+    important: f.filter(function (x) { return x.severity === "important"; }).length,
+    minor: f.filter(function (x) { return x.severity === "minor"; }).length
+  };
+  var formLabel = FORMS[form()] ? FORMS[form()].label : "ИП";
+
+  var html =
+    '<div class="cover">' +
+      "<h1>" + t("Результат проверки") + "</h1>" +
+      '<p class="cover-sub">' + t(formLabel + " · внимания " + plural(f.length, ["требует", "требуют", "требуют"]) + " " + f.length + " " + plural(f.length, ["пункт", "пункта", "пунктов"]) + " из " + countQuestions()) + "</p>" +
+    "</div>" +
+    '<p class="lede">' + t(verdict(f)) + "</p>" +
+    '<div class="score">' +
+      '<div class="s-critical"><b>' + counts.critical + "</b><span>" + t("критично") + "</span></div>" +
+      '<div class="s-important"><b>' + counts.important + "</b><span>" + t("важно") + "</span></div>" +
+      '<div class="s-minor"><b>' + counts.minor + "</b><span>" + t("можно отложить") + "</span></div>" +
+    "</div>";
+
+  if (f.length) {
+    html += '<p class="kicker">' + t("Что нашлось") + "</p><h2>" + t("Разбор по степени риска") + "</h2>" +
+      '<div class="findings">' + f.map(function (x) {
+        return '<div class="find sev-' + x.severity + '">' +
+          '<div class="find-side">' +
+            '<p class="find-sev">' + t(SEV_LABEL[x.severity]) + "</p>" +
+            '<p class="find-title">' + t(x.title) + "</p>" +
+            '<p class="find-norm">' + t(x.norm) + "</p>" +
+            (x.fine ? '<p class="find-norm">' + t("Штраф: " + x.fine) + "</p>" : "") +
+          "</div>" +
+          '<div class="find-body">' +
+            (x.unsure ? "<p>" + t("Вы ответили «не знаю» — считаю это поводом проверить, а не нарушением.") + "</p>" : "") +
+            "<p>" + t(x.why) + "</p>" +
+            (x.example ? '<div class="panel"><p>' + t(x.example) + "</p></div>" : "") +
+            '<p class="todo">' + t(x.todo) + "</p>" +
+          "</div>" +
+        "</div>";
+      }).join("") + "</div>";
+  }
+
+  html +=
+    '<p class="kicker" style="margin-top:56px">' + t("Отправьте результат") + "</p>" +
+    "<h2>" + t("Как показать это мне") + "</h2>" +
+    "<p>" + t("Приложение не отправляет ваши ответы автоматически — я их не вижу. Нажмите кнопку, итоги скопируются в буфер обмена, и пришлите их мне в Telegram. Я посмотрю и скажу, что из этого критично именно в вашей ситуации, а что подождёт.") + "</p>" +
+    '<div class="actions">' +
+      '<button type="button" id="btn-copy">' + t("Скопировать итоги") + "</button>" +
+      '<a href="https://t.me/yana_gorkunova" target="_blank" rel="noopener">' + t("Написать мне в Telegram") + "</a>" +
+    "</div>" +
+    '<p class="note" id="copy-status" style="margin-top:14px"></p>' +
+    '<textarea class="copybox" id="copy-box" hidden readonly aria-label="Итоги проверки"></textarea>' +
+
+    '<hr class="rule-thick">' +
+    '<p class="kicker">' + t("Моё предложение") + "</p>" +
+    "<h2>" + t("Что я могу закрыть за вас") + "</h2>" +
+    "<h3>" + t("Что входит") + "</h3>" +
+    '<ul class="clean">' +
+      "<li>" + t("Разбор вашего случая по результатам этой проверки: что критично, что подождёт, в каком порядке закрывать.") + "</li>" +
+      "<li>" + t("Оферта под ваш продукт: возвраты, рассрочка, сроки доступа, права на материалы.") + "</li>" +
+      "<li>" + t("Пакет по персональным данным: политика, формулировки согласий, уведомление в Роскомнадзор, внутренние документы оператора.") + "</li>" +
+      "<li>" + t("Договоры с подрядчиками и передача прав на материалы курса.") + "</li>" +
+      "<li>" + t("Ответы на претензии и расчёт возврата по конкретным ученикам.") + "</li>" +
+    "</ul>" +
+    "<h3>" + t("Стоимость") + "</h3>" +
+    "<p>" + t("Зависит от того, что именно нужно закрыть. Пришлите итоги проверки — назову цену и срок по вашему списку, без встречи и созвона.") + "</p>" +
+    "<h3><span class=\"red-dot\"></span>" + t("Мои контакты") + "</h3>" +
+    '<dl class="contacts">' +
+      "<div><dt>" + t("Канал") + "</dt><dd><a href=\"https://t.me/gorkunova_pravo\" target=\"_blank\" rel=\"noopener\">t.me/gorkunova_pravo</a></dd></div>" +
+      "<div><dt>" + t("Telegram") + "</dt><dd><a href=\"https://t.me/yana_gorkunova\" target=\"_blank\" rel=\"noopener\">t.me/yana_gorkunova</a></dd></div>" +
+      "<div><dt>" + t("Почта") + "</dt><dd>yana.gorkunova@gmail.com</dd></div>" +
+    "</dl>" +
+
+    '<p class="footer-line">' + t("Это проверка по типовым требованиям, а не юридическое заключение: она не учитывает ваши документы и переписку с клиентами. Суммы штрафов приведены как ориентир по действующим редакциям КоАП — точная квалификация зависит от обстоятельств и статуса нарушителя. Я обновляю вопросы по мере изменения норм; последняя сверка — октябрь 2026 года.") + "</p>" +
+    '<div class="actions">' +
+      '<button type="button" class="ghost" id="btn-back">' + t("Вернуться к ответам") + "</button>" +
+      '<button type="button" class="ghost" id="btn-restart">' + t("Пройти заново") + "</button>" +
+    "</div>";
+
+  elResult.innerHTML = html;
+
+  document.getElementById("btn-copy").addEventListener("click", copySummary);
+  document.getElementById("btn-back").addEventListener("click", function () {
+    state.step = BLOCKS.length - 1; save(); renderQuiz(); show("quiz");
+  });
+  document.getElementById("btn-restart").addEventListener("click", reset);
+}
+
+function summaryText() {
+  var f = findings();
+  var lines = [];
+  lines.push("Юридический аудит онлайн-школы — результат");
+  lines.push("Форма: " + (FORMS[form()] ? FORMS[form()].label : "—"));
+  var tq = state.answers.teachers;
+  lines.push("Обучение ведёт: " + (tq === "onlyme" ? "только я" : tq === "hired" ? "я и привлечённые преподаватели" : tq === "records" ? "только записанные материалы" : "—"));
+  lines.push("");
+  ["critical", "important", "minor"].forEach(function (sev) {
+    var group = f.filter(function (x) { return x.severity === sev; });
+    if (!group.length) return;
+    lines.push(SEV_LABEL[sev].toUpperCase() + " (" + group.length + "):");
+    group.forEach(function (x) {
+      lines.push("— " + x.title + " (" + x.norm + ")" + (x.unsure ? " — ответ «не знаю»" : ""));
+    });
+    lines.push("");
+  });
+  if (!f.length) lines.push("Нарушений по проверенным пунктам не нашлось.");
+  lines.push("Проверка: " + new Date().toLocaleDateString("ru-RU"));
+  return lines.join("\n");
+}
+
+function copySummary() {
+  var text = summaryText();
+  var status = document.getElementById("copy-status");
+  var box = document.getElementById("copy-box");
+  function fallback() {
+    box.value = text;
+    box.hidden = false;
+    box.focus();
+    box.select();
+    status.textContent = nb("Скопируйте текст из поля ниже — он уже выделен.");
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () {
+      status.textContent = nb("Итоги скопированы. Откройте мой Telegram и вставьте их в сообщение.");
+    }).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
+function reset() {
+  state = { answers: {}, step: 0, started: false };
+  save();
+  renderIntro();
+  show("intro");
+}
+
+/* ——— Старт ——— */
+load();
+renderIntro();
+if (state.started && Object.keys(state.answers).length) {
+  if (state.step > BLOCKS.length - 1) state.step = BLOCKS.length - 1;
+  renderQuiz();
+  show("quiz");
+} else {
+  show("intro");
+}
+</script>
